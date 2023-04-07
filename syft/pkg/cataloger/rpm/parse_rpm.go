@@ -34,17 +34,24 @@ func parseRpm(_ source.FileResolver, _ *generic.Environment, reader source.Locat
 	size, _ := rpm.Header.InstalledSize()
 	files, _ := rpm.Header.GetFiles()
 
+	summary, _ := rpm.Header.GetString(rpmutils.SUMMARY)
+	description, _ := rpm.Header.GetString(rpmutils.DESCRIPTION)
+	url, _ := rpm.Header.GetString(rpmutils.URL)
+
 	metadata := pkg.RpmMetadata{
-		Name:      nevra.Name,
-		Version:   nevra.Version,
-		Epoch:     parseEpoch(nevra.Epoch),
-		Arch:      nevra.Arch,
-		Release:   nevra.Release,
-		SourceRpm: sourceRpm,
-		Vendor:    vendor,
-		License:   strings.Join(licenses, " AND "), // TODO: AND conjunction is not necessarily correct, but we don't have a way to represent multiple licenses yet
-		Size:      int(size),
-		Files:     mapFiles(files, digestAlgorithm),
+		Name:        nevra.Name,
+		Version:     nevra.Version,
+		Epoch:       parseEpoch(nevra.Epoch),
+		Arch:        nevra.Arch,
+		Release:     nevra.Release,
+		SourceRpm:   sourceRpm,
+		Vendor:      vendor,
+		License:     strings.Join(licenses, " AND "), // TODO: AND conjunction is not necessarily correct, but we don't have a way to represent multiple licenses yet
+		Size:        int(size),
+		Files:       mapFiles(files, digestAlgorithm),
+		Summary:     summary,
+		Description: description,
+		URL:         url,
 	}
 
 	return []pkg.Package{newPackage(reader.Location, metadata, nil)}, nil, nil

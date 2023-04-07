@@ -34,4 +34,7 @@ const (
 
 	// AttestationStarted is a partybus event that occurs when starting an SBOM attestation process
 	AttestationStarted partybus.EventType = "syft-attestation-started-event"
+
+	// FileComplianceCatalogerStarted is a partybus event that occures when the file compliance cataloging has begun
+	FileComplianceCatalogerStarted partybus.EventType = "syft-file-compliance-cataloger-started-event"
 )

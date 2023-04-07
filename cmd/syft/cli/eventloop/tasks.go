@@ -23,6 +23,7 @@ func Tasks(app *config.Application) ([]Task, error) {
 		generateCatalogFileDigestsTask,
 		generateCatalogSecretsTask,
 		generateCatalogContentsTask,
+		generateCatalogComplianceTask,
 	}
 
 	for _, generator := range generators {
@@ -182,6 +183,32 @@ func generateCatalogContentsTask(app *config.Application) (Task, error) {
 		return nil, nil
 	}
 
+	return task, nil
+}
+
+func generateCatalogComplianceTask(app *config.Application) (Task, error) {
+	if !app.FileCompliance.Cataloger.Enabled {
+		return nil, nil
+	}
+
+	complianceCataloger, err := file.NewComplianceCataloger(app.FileCompliance.SkipFilesAboveSize)
+	if err != nil {
+		return nil, err
+	}
+
+	task := func(results *sbom.Artifacts, src *source.Source) ([]artifact.Relationship, error) {
+		resolver, err := src.FileResolver(app.FileCompliance.Cataloger.ScopeOpt)
+		if err != nil {
+			return nil, err
+		}
+
+		result, err := complianceCataloger.Catalog(resolver)
+		if err != nil {
+			return nil, err
+		}
+		results.Compliance = result
+		return nil, nil
+	}
 	return task, nil
 }
 

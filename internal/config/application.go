@@ -15,6 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/anchore/go-logger"
+
 	"github.com/anchore/syft/internal"
 	"github.com/anchore/syft/internal/log"
 	"github.com/anchore/syft/syft/pkg/cataloger"
@@ -61,6 +62,7 @@ type Application struct {
 	Name                   string             `yaml:"name" json:"name" mapstructure:"name"`
 	Parallelism            int                `yaml:"parallelism" json:"parallelism" mapstructure:"parallelism"`                                           // the number of catalog workers to run in parallel
 	DefaultImagePullSource string             `yaml:"default-image-pull-source" json:"default-image-pull-source" mapstructure:"default-image-pull-source"` // specify default image pull source
+	FileCompliance         fileCompliance     `yaml:"file-compliance" json:"file-compliance" mapstructure:"file-compliance"`
 }
 
 func (cfg Application) ToCatalogerConfig() cataloger.Config {

@@ -42,3 +42,7 @@ bin/
 # attestation
 cosign.key
 cosign.pub
+
+# local configs
+.syft.yaml
+nice_syft.json

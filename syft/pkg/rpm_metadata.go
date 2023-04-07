@@ -31,6 +31,9 @@ type RpmMetadata struct {
 	Vendor          string            `json:"vendor"`
 	ModularityLabel string            `json:"modularityLabel"`
 	Files           []RpmdbFileRecord `json:"files"`
+	Summary         string            `json:"summary"`
+	Description     string            `json:"description"`
+	URL             string            `json:"url"`
 }
 
 // RpmdbFileRecord represents the file metadata for a single file attributed to a RPM package.

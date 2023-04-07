@@ -8,7 +8,7 @@ import (
 	"github.com/anchore/syft/syft/pkg"
 )
 
-func Test_Description(t *testing.T) {
+func Test_Summary(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    pkg.Package
@@ -21,38 +21,20 @@ func Test_Description(t *testing.T) {
 			expected: "",
 		},
 		{
-			name: "from apk",
-			input: pkg.Package{
-				Metadata: pkg.ApkMetadata{
-					Description: "a description!",
-				},
-			},
-			expected: "a description!",
-		},
-		{
-			name: "from npm",
-			input: pkg.Package{
-				Metadata: pkg.NpmPackageJSONMetadata{
-					Description: "a description!",
-				},
-			},
-			expected: "a description!",
-		},
-		{
 			name: "from rpm",
 			input: pkg.Package{
 				Metadata: pkg.RpmMetadata{
-					Description: "a description!",
+					Summary: "a summary!",
 				},
 			},
-			expected: "a description!",
+			expected: "a summary!",
 		},
 		{
 			// note: since this is an optional field, no value is preferred over NONE or NOASSERTION
 			name: "empty",
 			input: pkg.Package{
-				Metadata: pkg.NpmPackageJSONMetadata{
-					Homepage: "",
+				Metadata: pkg.RpmMetadata{
+					Summary: "",
 				},
 			},
 			expected: "",

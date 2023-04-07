@@ -288,7 +288,7 @@ func toPackages(catalog *pkg.Catalog, sbom sbom.SBOM) (results []*spdx.Package) 
 
 			// 7.18: Package Summary Description
 			// Cardinality: optional, one
-			PackageSummary: "",
+			PackageSummary: Summary(p),
 
 			// 7.19: Package Detailed Description
 			// Cardinality: optional, one
@@ -442,14 +442,25 @@ func toFiles(s sbom.SBOM) (results []*spdx.File) {
 			comment = fmt.Sprintf("layerID: %s", coordinates.FileSystemID)
 		}
 
+		var (
+			license        []string
+			copyrightTexts string
+		)
+		if complianceForLocation, exists := artifacts.Compliance[coordinates]; exists {
+			license = complianceForLocation.Licenses
+			copyrightTexts = complianceForLocation.CopyrightsText
+		}
+
 		results = append(results, &spdx.File{
 			FileSPDXIdentifier: toSPDXID(coordinates),
 			FileComment:        comment,
 			// required, no attempt made to determine license information
-			LicenseConcluded: noAssertion,
-			Checksums:        toFileChecksums(digests),
-			FileName:         coordinates.RealPath,
-			FileTypes:        toFileTypes(metadata),
+			LicenseConcluded:   noAssertion,
+			Checksums:          toFileChecksums(digests),
+			FileName:           coordinates.RealPath,
+			FileTypes:          toFileTypes(metadata),
+			LicenseInfoInFiles: license,
+			FileCopyrightText:  copyrightTexts,
 		})
 	}
 

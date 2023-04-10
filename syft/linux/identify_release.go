@@ -57,6 +57,7 @@ var identityFiles = []parseEntry{
 func IdentifyRelease(resolver source.FileResolver) *Release {
 	logger := log.Nested("operation", "identify-release")
 	for _, entry := range identityFiles {
+		log.Debugf("[identify_release]find location by path: %s", entry.path)
 		locations, err := resolver.FilesByPath(entry.path)
 		if err != nil {
 			logger.WithFields("error", err, "path", entry.path).Trace("unable to get path")
@@ -64,6 +65,7 @@ func IdentifyRelease(resolver source.FileResolver) *Release {
 		}
 
 		for _, location := range locations {
+			log.Debugf("[identify_release]read location: %s", location.RealPath)
 			contentReader, err := resolver.FileContentsByLocation(location)
 			if err != nil {
 				logger.WithFields("error", err, "path", location.RealPath).Trace("unable to get contents")
@@ -76,7 +78,7 @@ func IdentifyRelease(resolver source.FileResolver) *Release {
 				logger.WithFields("error", err, "path", location.RealPath).Trace("unable to read contents")
 				continue
 			}
-
+			log.Debugf("[identify_release]read content: %s", string(content))
 			release, err := entry.fn(string(content))
 			if err != nil {
 				logger.WithFields("error", err, "path", location.RealPath).Trace("unable to parse contents")

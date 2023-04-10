@@ -88,6 +88,11 @@ func newMetadataFromManifestLine(entry string) (*pkg.RpmMetadata, error) {
 	}, nil
 }
 
+// PackageURL returns the PURL for specific RHEL package
+func PackageURL(m pkg.RpmMetadata, distro *linux.Release) string {
+	return packageURL(m, distro)
+}
+
 // packageURL returns the PURL for the specific RHEL package (see https://github.com/package-url/purl-spec)
 func packageURL(m pkg.RpmMetadata, distro *linux.Release) string {
 	var namespace string

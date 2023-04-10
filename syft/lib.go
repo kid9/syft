@@ -22,6 +22,7 @@ import (
 	"github.com/wagoodman/go-partybus"
 
 	"github.com/anchore/go-logger"
+
 	"github.com/anchore/syft/internal/bus"
 	"github.com/anchore/syft/internal/log"
 	"github.com/anchore/syft/syft/artifact"
@@ -64,6 +65,9 @@ func CatalogPackages(src *source.Source, cfg cataloger.Config) (*pkg.Catalog, []
 		case source.DirectoryScheme:
 			log.Info("cataloging directory")
 			catalogers = cataloger.DirectoryCatalogers(cfg)
+		case source.OsScheme:
+			log.Info("cataloging os system")
+			catalogers = cataloger.OsSystemCatalogers(cfg)
 		default:
 			return nil, nil, nil, fmt.Errorf("unable to determine cataloger set from scheme=%+v", src.Metadata.Scheme)
 		}

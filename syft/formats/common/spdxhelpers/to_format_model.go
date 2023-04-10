@@ -32,6 +32,16 @@ const (
 //
 //nolint:funlen
 func ToFormatModel(s sbom.SBOM) *spdx.Document {
+	if s.Source.Scheme == source.OsScheme {
+		if s.Artifacts.LinuxDistribution != nil {
+			s.Source.Name = fmt.Sprintf("%s-%s",
+				s.Artifacts.LinuxDistribution.Name,
+				s.Artifacts.LinuxDistribution.Version,
+			)
+		} else {
+			s.Source.Name = "unknown-system"
+		}
+	}
 	name, namespace := DocumentNameAndNamespace(s.Source)
 	relationships := toRelationships(s.RelationshipsSorted())
 

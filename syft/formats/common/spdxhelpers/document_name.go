@@ -14,6 +14,8 @@ func DocumentName(srcMetadata source.Metadata) string {
 		return srcMetadata.ImageMetadata.UserInput
 	case source.DirectoryScheme, source.FileScheme:
 		return srcMetadata.Path
+	case source.OsScheme:
+		return srcMetadata.Name
 	default:
 		return "unknown"
 	}

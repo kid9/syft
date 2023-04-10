@@ -92,6 +92,13 @@ func DirectoryCatalogers(cfg Config) []pkg.Cataloger {
 	}, cfg.Catalogers)
 }
 
+// OsSystemCatalogers slice of locally implemented catalogers that are fit for detecting packages in target os system
+func OsSystemCatalogers(cfg Config) []pkg.Cataloger {
+	return filterCatalogers([]pkg.Cataloger{
+		rpm.NewRpmDBCataloger(),
+	}, cfg.Catalogers)
+}
+
 // AllCatalogers returns all implemented catalogers
 func AllCatalogers(cfg Config) []pkg.Cataloger {
 	return filterCatalogers([]pkg.Cataloger{

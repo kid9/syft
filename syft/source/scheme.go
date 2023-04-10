@@ -22,12 +22,15 @@ const (
 	ImageScheme Scheme = "ImageScheme"
 	// FileScheme indicates the source being cataloged is a single file
 	FileScheme Scheme = "FileScheme"
+	// OsScheme indicates the source being cataloged is an os system
+	OsScheme Scheme = "OsScheme"
 )
 
 var AllSchemes = []Scheme{
 	DirectoryScheme,
 	ImageScheme,
 	FileScheme,
+	OsScheme,
 }
 
 func DetectScheme(fs afero.Fs, imageDetector sourceDetector, userInput string) (Scheme, image.Source, string, error) {
@@ -45,6 +48,8 @@ func DetectScheme(fs afero.Fs, imageDetector sourceDetector, userInput string) (
 			return UnknownScheme, image.UnknownSource, "", fmt.Errorf("unable to expand directory path: %w", err)
 		}
 		return FileScheme, image.UnknownSource, fileLocation, nil
+	case strings.HasPrefix(userInput, "os:"):
+		return OsScheme, image.UnknownSource, "", nil
 	}
 
 	// try the most specific sources first and move out towards more generic sources.

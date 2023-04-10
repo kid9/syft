@@ -20,6 +20,7 @@ import (
 
 	"github.com/anchore/stereoscope"
 	"github.com/anchore/stereoscope/pkg/image"
+
 	"github.com/anchore/syft/internal/log"
 	"github.com/anchore/syft/syft/artifact"
 )
@@ -135,6 +136,8 @@ func New(in Input, registryOptions *image.RegistryOptions, exclusions []string) 
 		source, cleanupFn, err = generateDirectorySource(fs, in)
 	case ImageScheme:
 		source, cleanupFn, err = generateImageSource(in, registryOptions)
+	case OsScheme:
+		source, cleanupFn, err = generateOsSource(fs, in)
 	default:
 		err = fmt.Errorf("unable to process input for scanning: %q", in.UserInput)
 	}
@@ -258,6 +261,11 @@ func generateFileSource(fs afero.Fs, in Input) (*Source, func(), error) {
 	return &s, cleanupFn, nil
 }
 
+func generateOsSource(fs afero.Fs, in Input) (*Source, func(), error) {
+	s, cleanupFn := NewFromOsSystem()
+	return &s, cleanupFn, nil
+}
+
 // NewFromDirectory creates a new source object tailored to catalog a given filesystem directory recursively.
 func NewFromDirectory(path string) (Source, error) {
 	return NewFromDirectoryWithName(path, "")
@@ -321,6 +329,19 @@ func NewFromFileWithName(path string, name string) (Source, func()) {
 
 	s.SetID()
 	return s, cleanupFn
+}
+
+// NewFromOsSystem creates a new source object tailored to catalog an os system
+func NewFromOsSystem() (Source, func()) {
+	s := Source{
+		mutex: &sync.Mutex{},
+		Metadata: Metadata{
+			Scheme: OsScheme,
+		},
+		path: "/",
+	}
+	s.SetID()
+	return s, nil
 }
 
 // fileAnalysisPath returns the path given, or in the case the path is an archive, the location where the archive
@@ -454,7 +475,7 @@ func chain(chainID string, layers []LayerMetadata) string {
 
 func (s *Source) FileResolver(scope Scope) (FileResolver, error) {
 	switch s.Metadata.Scheme {
-	case DirectoryScheme, FileScheme:
+	case DirectoryScheme, FileScheme, OsScheme:
 		s.mutex.Lock()
 		defer s.mutex.Unlock()
 		if s.directoryResolver == nil {

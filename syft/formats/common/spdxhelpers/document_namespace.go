@@ -16,6 +16,7 @@ const (
 	inputImage     = "image"
 	inputDirectory = "dir"
 	inputFile      = "file"
+	inputOS        = "os"
 )
 
 func DocumentNameAndNamespace(srcMetadata source.Metadata) (string, string) {
@@ -33,6 +34,8 @@ func DocumentNamespace(name string, srcMetadata source.Metadata) string {
 		input = inputDirectory
 	case source.FileScheme:
 		input = inputFile
+	case source.OsScheme:
+		input = inputOS
 	}
 
 	uniqueID := uuid.Must(uuid.NewRandom())

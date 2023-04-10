@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 
+	"github.com/anchore/stereoscope/pkg/file"
 	"github.com/google/licensecheck"
 	"github.com/wagoodman/go-partybus"
 	"github.com/wagoodman/go-progress"
@@ -54,10 +55,10 @@ func (i *ComplianceCataloger) Catalog(resolver source.FileResolver) (
 		if err != nil {
 			return nil, err
 		}
-		prog.N++
+		prog.Increment()
 		results[location.Coordinates] = result
 	}
-	log.Debugf("file compliance cataloger processed %d files", prog.N)
+	log.Debugf("file compliance cataloger processed %d files", prog.Current())
 	prog.SetCompleted()
 	return results, nil
 }
@@ -70,7 +71,7 @@ func (i *ComplianceCataloger) catalogLocation(resolver source.FileResolver, loca
 		return ret, err
 	}
 	log.Debugf("scan file compliance in location: %s", location.RealPath)
-	if meta.Type != source.RegularFile {
+	if meta.Type != file.TypeRegular {
 		return ret, errUncomplianceFile
 	}
 	contentReader, err := resolver.FileContentsByLocation(location)
@@ -89,9 +90,7 @@ func (i *ComplianceCataloger) catalogLocation(resolver source.FileResolver, loca
 
 func complianceCatalogingProcess(locations int64) (*progress.Stage, *progress.Manual) {
 	stage := &progress.Stage{}
-	prog := &progress.Manual{
-		Total: locations,
-	}
+	prog := progress.NewManual(locations)
 
 	bus.Publish(partybus.Event{
 		Type: event.FileComplianceCatalogerStarted,
